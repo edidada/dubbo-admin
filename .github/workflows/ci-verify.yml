@@ -1,0 +1,44 @@
+name: CI Verify (dubbo-admin)
+
+on:
+  push:
+    branches: ["ci/gha-verify"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Clone upstream source
+        run: git clone --depth=1 --branch develop https://github.com/apache/dubbo-admin.git source
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: source/go.mod
+          cache: true
+          cache-dependency-path: source/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build Go backend
+        working-directory: source
+        run: go build -v ./...
+      - name: Build Vue3 frontend
+        working-directory: source/ui-vue3
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Show artifacts
+        working-directory: source
+        run: ls -lh ui-vue3/dist | head -20
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dubbo-admin-ui-dist
+          path: source/ui-vue3/dist
