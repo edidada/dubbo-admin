@@ -32,7 +32,13 @@ jobs:
         run: |
           npm install --no-audit --no-fund --legacy-peer-deps
           npm run build
-      - name: Build Go backend (embeds ui-vue3/dist)
+      - name: Stage UI assets for go:embed
+        working-directory: source
+        run: |
+          mkdir -p app/dubbo-ui/dist
+          cp -r ui-vue3/dist/admin app/dubbo-ui/dist/
+          ls -lh app/dubbo-ui/dist/admin | head -10
+      - name: Build Go backend (embeds app/dubbo-ui/dist)
         working-directory: source
         run: go build -v ./...
       - name: Show artifacts
