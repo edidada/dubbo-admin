@@ -27,14 +27,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Build Go backend
-        working-directory: source
-        run: go build -v ./...
       - name: Build Vue3 frontend
         working-directory: source/ui-vue3
         run: |
           npm install --no-audit --no-fund
           npm run build
+      - name: Build Go backend (embeds ui-vue3/dist)
+        working-directory: source
+        run: go build -v ./...
       - name: Show artifacts
         working-directory: source
         run: ls -lh ui-vue3/dist | head -20
