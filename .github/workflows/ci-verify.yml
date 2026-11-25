@@ -30,7 +30,7 @@ jobs:
       - name: Build Vue3 frontend
         working-directory: source/ui-vue3
         run: |
-          npm install --no-audit --no-fund
+          npm install --no-audit --no-fund --legacy-peer-deps
           npm run build
       - name: Build Go backend (embeds ui-vue3/dist)
         working-directory: source
